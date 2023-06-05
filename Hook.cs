@@ -141,19 +141,19 @@ namespace DensityMod
                 if (inputTemplate != null){
                     //Low Density dropdown                   
                     var denLowChoice = EnumToString<BuildingPreset.Density>((BuildingPreset.Density)System.Enum.Parse(typeof(BuildingPreset.Density), DensityMod.DensityMinConfig.Value));
-                    dropdownDenLow = createDropdown(inputTemplate.gameObject, "DensitydropdownLow", menuContainer.transform, DensityOptions, denLowChoice);
+                    dropdownDenLow = createDropdown(inputTemplate.gameObject, "Lowest Density", menuContainer.transform, DensityOptions, denLowChoice);
 
                     //High Density dropdown
                     var denHighChoice = EnumToString<BuildingPreset.Density>((BuildingPreset.Density)System.Enum.Parse(typeof(BuildingPreset.Density), DensityMod.DensityMaxConfig.Value));
-                    dropdownDenHigh = createDropdown(inputTemplate.gameObject, "DensitydropdownHigh", menuContainer.transform, DensityOptions, denHighChoice);
+                    dropdownDenHigh = createDropdown(inputTemplate.gameObject, "Highest Density", menuContainer.transform, DensityOptions, denHighChoice);
 
                     //Lowest Land Value dropdown
                     var valueLowChoice = EnumToString<BuildingPreset.LandValue>((BuildingPreset.LandValue)System.Enum.Parse(typeof(BuildingPreset.LandValue), DensityMod.LandValueMinConfig.Value));
-                    dropdownValueLow = createDropdown(inputTemplate.gameObject, "LandValueDropdownLow", menuContainer.transform, ValueOptions, valueLowChoice);
+                    dropdownValueLow = createDropdown(inputTemplate.gameObject, "Lowest Land Value", menuContainer.transform, ValueOptions, valueLowChoice);
 
                     //Highest Land Value dropdown
                     var valueHighChoice = EnumToString<BuildingPreset.LandValue>((BuildingPreset.LandValue)System.Enum.Parse(typeof(BuildingPreset.LandValue), DensityMod.LandValueMaxConfig.Value));
-                    dropdownValueHigh = createDropdown(inputTemplate.gameObject, "LandValueDropdownHigh", menuContainer.transform, ValueOptions, valueHighChoice);
+                    dropdownValueHigh = createDropdown(inputTemplate.gameObject, "Highest Land Value", menuContainer.transform, ValueOptions, valueHighChoice);
                 }
 
                 AnyCitySizeHooks.MainMenuController_Start.Postfix();
@@ -162,10 +162,12 @@ namespace DensityMod
 
         static public GameObject createDropdown(GameObject _template, string _name, Transform _container, List<string> _options, string _selectedOption){
             var final = GameObject.Instantiate(_template);
-            final.gameObject.name = _name;
+            final.gameObject.name = _name.Trim() + "Dropdown";//Make it easier to identify
             final.transform.parent = _container;
             final.GetComponent<DropdownController>().AddOptions(_options, false);
             final.GetComponent<DropdownController>().SelectFromStaticOption(_selectedOption);
+            final.GetComponentInChildren<MenuAutoTextController>().enabled = false;
+            final.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text = _name;
             return final;
         }
 
@@ -175,22 +177,6 @@ namespace DensityMod
             
             public static void Postfix(){
                 if (dropdownDenLow != null){
-                    //Lowest Density text
-                    if (dropdownDenLow.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text != "Lowest Density"){
-                        dropdownDenLow.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Lowest Density";
-                    }
-                    //Highest Density text
-                    if (dropdownDenHigh.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text != "Highest Density"){
-                        dropdownDenHigh.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Highest Density";
-                    }
-                    //Lowest Land Value text
-                    if (dropdownValueLow.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text != "Lowest Land Value"){
-                        dropdownValueLow.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Lowest Land Value";
-                    }
-                    //Highest Land Value text
-                    if (dropdownValueHigh.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text != "Highest Land Value"){
-                        dropdownValueHigh.transform.FindChild("LabelText").GetComponent<TMPro.TextMeshProUGUI>().text = "Highest Land Value";
-                    }
                     //Density Menu header title
                     if (densityMenu.transform.FindChild("Header").FindChild("PanelTitle").GetComponent<TMPro.TextMeshProUGUI>().text != "Density Settings"){
                         densityMenu.transform.FindChild("Header").FindChild("PanelTitle").GetComponent<TMPro.TextMeshProUGUI>().text = "Density Settings";
