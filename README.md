@@ -2,20 +2,16 @@
 A mod that allows you to set the density and land value range for city generation. With an in-game menu in the City Generation screen
 
 
-# Release 1.4
+# Release 2.0
 
-### New "Land Value" settings!
+### AnyCitySize mod is now part of this mod!
 
-Land value seems to affect how rich a block is, though more testing is needed, this seems to affect what buildings spawn.
-
-### Now Open Source!
+PiePieOnline graciously merged their wonderful mod to mine! Now you can download it in a single package. This is a simple port job for now, but in the future I will rework the UI to be more in line with how other parts of my mod look.
 
 #### Changes:
 
-- Added new Land Value setting that can be tweaked
-- Fixed some typos present in Config file(I was very tired when writing it)
-- Major overhauls under the hood for expandability, and readability
-- Now open source!
+- AnyCitySize mod merged
+- Under the hood fixes
 
 # Installation: 
 
