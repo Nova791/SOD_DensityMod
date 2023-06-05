@@ -17,8 +17,17 @@ Land value seems to affect how rich a block is, though more testing is needed, t
 - Major overhauls under the hood for expandability, and readability
 - Now open source!
 
-# Release 1.3
+# Installation: 
 
-- Added new UI to City Generation menu.
-- New in-game dropdown boxes to select desired settings. Now you no longer have to fiddle with the config file!
-- Finally cleaned up the logs, so all debug related stuff is actually in the debug log. Sorry for the spam on previous versions!
+Install BepInEx IL2CPP-6.0.667 or later
+Place the DensityMod.dll file into "Shadows of Doubt\BepInEx\plugins". Run the game!
+
+Or use Thunderstore and install from here: https://thunderstore.io/c/shadows-of-doubt/p/Nova/DensityMod/
+
+# Notes: 
+
+This mod allows you to set the density and land value range for city generation. With an in-game menu in the City Generation screen 
+
+# Disclaimer: 
+
+This modification does not hold any warranty or guarantee. Generating higher density cities can cause long load times, and other issues not known. It could also break stuff I'm not aware of.
