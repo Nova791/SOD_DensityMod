@@ -31,3 +31,7 @@ This mod allows you to set the density and land value range for city generation.
 # Disclaimer: 
 
 This modification does not hold any warranty or guarantee. Generating higher density cities can cause long load times, and other issues not known. It could also break stuff I'm not aware of.
+
+# Credit:
+
+Thank you to PiePieOnline for adding their wonderful AnyCitySize mod! Their mod helped guide mine during development, so I'm happy to continue it forward now, with their help! 
