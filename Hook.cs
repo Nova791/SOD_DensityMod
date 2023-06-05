@@ -155,6 +155,8 @@ namespace DensityMod
                     var valueHighChoice = EnumToString<BuildingPreset.LandValue>((BuildingPreset.LandValue)System.Enum.Parse(typeof(BuildingPreset.LandValue), DensityMod.LandValueMaxConfig.Value));
                     dropdownValueHigh = createDropdown(inputTemplate.gameObject, "LandValueDropdownHigh", menuContainer.transform, ValueOptions, valueHighChoice);
                 }
+
+                AnyCitySizeHooks.MainMenuController_Start.Postfix();
             }
         }
 
