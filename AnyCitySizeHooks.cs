@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TMPro;
 using UnityEngine;
 
 namespace DensityMod
@@ -30,10 +31,12 @@ namespace DensityMod
 
                 // Copy the city name input box as our template
                 var inputTemplate = GameObject.Find("MenuCanvas").transform.Find("MainMenu/GenerateCityPanel/GenerateNewCityComponents/CityNameInput").gameObject;
+                //This is a bandaid fix, till I get a proper solution
+                var popupMessageObject = GameObject.Find("TooltipCanvas").transform.Find("PopupMessage").gameObject;
 
-                if (inputTemplate != null)
-                {
+                if (inputTemplate != null) {
                     var newInputBox = GameObject.Instantiate(inputTemplate.gameObject);
+                    newInputBox.name = "CitySizeInput";
                     newInputBox.SetActive(true);
 
                     // Change the label in front
@@ -51,6 +54,11 @@ namespace DensityMod
                         PopupMessageController.Instance.OnLeftButton = (PopupMessageController.LeftButton)HandlePopupCancel;
                         PopupMessageController.Instance.OnRightButton = (PopupMessageController.RightButton)HandlePopupSubmit;
                         PopupMessageController.Instance.PopupMessage("Enter city width.", true, true, RButton: "Confirm", enableInputField: true);
+
+
+                        //This is a temporary fix, that forces the title text
+                        var title = popupMessageObject.transform.Find("Header/PanelTitle").gameObject;
+                        title.GetComponent<TextMeshProUGUI>().text = "Enter City Size";
 
                     }));
 
