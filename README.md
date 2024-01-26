@@ -1,25 +1,8 @@
 # SOD_DensityMod
 A mod that allows you to set the density and land value range for city generation. With an in-game menu in the City Generation screen
 
-# Release 2.0.3
-### Hotfix for City Size input ###
-
-# Release 2.0.2
-### Updated to work with version 36.05! ###
-
-# Release 2.0.1
-### Updated to work with version 35.05+ ###
-
-# Release 2.0
-
-### AnyCitySize mod is now part of this mod!
-
-PiePieOnline graciously merged their wonderful mod to mine! Now you can download it in a single package. This is a simple port job for now, but in the future I will rework the UI to be more in line with how other parts of my mod look.
-
-#### Changes:
-
-- AnyCitySize mod merged
-- Under the hood fixes
+# Release 2.0.4
+### Updated to work with version 36.06! ###
 
 # Installation: 
 
