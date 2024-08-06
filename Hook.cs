@@ -128,6 +128,7 @@ namespace DensityMod
                     GameObject.Destroy(densityMenu.transform.FindChild("ButtonArea").GetChild(0).gameObject);
                     var doneButton = densityMenu.transform.FindChild("ButtonArea").GetChild(1).gameObject;
                     doneButton.transform.parent = densityMenu.transform.FindChild("ButtonArea").transform;
+                    doneButton.GetComponent<Button>().onClick.RemoveAllListeners();
                     doneButton.GetComponent<Button>().onClick.AddListener((UnityAction)CloseDensityMenu);
 
                     //Grabs a template button, then adds it to the Generate City menu, then sets itself to be between the back and continue buttons
@@ -135,6 +136,7 @@ namespace DensityMod
                     DensityModBtn = GameObject.Instantiate(btnTemp.gameObject);
                     DensityModBtn.transform.parent = btnTemp.transform.parent;
                     DensityModBtn.transform.SetSiblingIndex(1);
+                    DensityModBtn.GetComponent<Button>().onClick.RemoveAllListeners();
                     DensityModBtn.GetComponent<Button>().onClick.AddListener((UnityAction)OpenDensityMenu);
                 }
 

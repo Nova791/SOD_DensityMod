@@ -12,7 +12,7 @@ namespace DensityMod
     {
         // Can't hook directly, as we need to run after Density
         // Also more efficent to do it this way
-        // [HarmonyPatch(typeof(MainMenuController), "Start")]
+        //[HarmonyPatch(typeof(CityEditorController), "Start")]
         public class MainMenuController_Start
         {
             public static int selectedX, selectedY;
@@ -30,11 +30,11 @@ namespace DensityMod
                 selectedY = RestartSafeController.Instance.cityY;
 
                 // Copy the city name input box as our template
-                var inputTemplate = GameObject.Find("MenuCanvas").transform.Find("MainMenu/GenerateCityPanel/GenerateNewCityComponents/CityNameInput").gameObject;
+                var inputTemplate = GameObject.Find("MenuCanvas/MainMenu/GenerateCityPanel/GenerateNewCityComponents/CityNameInput");
                 //This is a bandaid fix, till I get a proper solution
                 var popupMessageObject = GameObject.Find("TooltipCanvas").transform.Find("PopupMessage").gameObject;
-
-                if (inputTemplate != null) {
+                if (inputTemplate != null) 
+                {
                     var newInputBox = GameObject.Instantiate(inputTemplate.gameObject);
                     newInputBox.name = "CitySizeInput";
                     newInputBox.SetActive(true);
@@ -67,12 +67,128 @@ namespace DensityMod
 
                     // Disable the normal input box
                     // "MainMenu/GenerateCityPanel/GenerateNewCityComponents/SizeDropdown"
-                    inputTemplate.transform.parent.GetChild(1).gameObject.SetActive(false);
+                    var SizeDropdownIndex = inputTemplate.transform.parent.FindChild("SizeDropdown").GetSiblingIndex();
+                    inputTemplate.transform.parent.FindChild("SizeDropdown").gameObject.SetActive(false);
 
                     // Add the new input area
                     newInputBox.transform.SetParent(inputTemplate.transform.parent, true);
-                    newInputBox.transform.SetSiblingIndex(1);
+                    newInputBox.transform.SetSiblingIndex(SizeDropdownIndex);
                 }
+            }
+            
+            // TODO: This is being called on submit for all popups, for unknown reasons
+            public static void HandlePopupSubmit()
+            {
+                PopupMessageController.Instance.OnLeftButton -= (PopupMessageController.LeftButton)HandlePopupCancel;
+                PopupMessageController.Instance.OnRightButton -= (PopupMessageController.RightButton)HandlePopupSubmit;
+                PopupMessageController.Instance.OnLeftButton = popupLeftCallbackCache;
+                PopupMessageController.Instance.OnRightButton = popupRightCallbackCache;
+
+                string enteredValue = PopupMessageController.Instance.inputField.text;
+
+                if ((new System.Text.RegularExpressions.Regex("^\\d+x\\d+$")).Match(enteredValue).Length == 0) return;
+
+                var newSize = enteredValue.Split("x").Select(value => int.Parse(value)).ToList();
+
+                RestartSafeController.Instance.cityX = 2 + newSize[0];
+                RestartSafeController.Instance.cityY = 2 + newSize[1];
+
+                DensityMod.Logger.LogDebug($"Width: {RestartSafeController.Instance.cityX - 2} Height: {RestartSafeController.Instance.cityY - 2}");
+
+                UpdateMenuText();
+            }
+
+            public static void HandlePopupCancel()
+            {
+                PopupMessageController.Instance.OnLeftButton -= (PopupMessageController.LeftButton)HandlePopupCancel;
+                PopupMessageController.Instance.OnRightButton -= (PopupMessageController.RightButton)HandlePopupSubmit;
+                PopupMessageController.Instance.OnLeftButton = popupLeftCallbackCache;
+                PopupMessageController.Instance.OnRightButton = popupRightCallbackCache;
+            }
+
+            public static void UpdateMenuText()
+            {
+                if(newSizeTMPButtonLabel != null)
+                {
+                    selectedX = RestartSafeController.Instance.cityX;
+                    selectedY = RestartSafeController.Instance.cityY;
+
+                    newSizeTMPButtonLabel.SetText($"Width: {RestartSafeController.Instance.cityX - 2} Height: {RestartSafeController.Instance.cityY - 2}");
+                }
+            }
+
+            public static bool IsInitialised()
+            {
+                return newSizeTMPButtonLabel != null;
+            }
+        }
+
+        [HarmonyPatch(typeof(CityEditorController), "Start")]
+        public class CityEditorController_Start
+        {
+            public static int selectedX, selectedY;
+
+            static TMPro.TextMeshProUGUI newSizeTMPButtonLabel;
+
+            static PopupMessageController.LeftButton popupLeftCallbackCache;
+            static PopupMessageController.RightButton popupRightCallbackCache;
+
+            public static void Postfix()
+            {
+                if (newSizeTMPButtonLabel != null) return;
+
+                selectedX = RestartSafeController.Instance.cityX;
+                selectedY = RestartSafeController.Instance.cityY;
+
+                // Copy the city name input box as our template
+                var inputTemplateCityEdit = GameObject.Find("PrototypeBuilderCanvas/CityEditorPanel/ButtonComponents/CityNameInput");
+
+                //This is a bandaid fix, till I get a proper solution
+                var popupMessageObject = GameObject.Find("TooltipCanvas").transform.Find("PopupMessage").gameObject;
+
+                if (inputTemplateCityEdit != null) UpdateMenuElements(inputTemplateCityEdit, popupMessageObject);
+            }
+
+            public static void UpdateMenuElements (GameObject inputTemplate, GameObject popupMessageObject){
+                var newInputBox = GameObject.Instantiate(inputTemplate.gameObject);
+                newInputBox.name = "CitySizeInput";
+                newInputBox.SetActive(true);
+
+                // Change the label in front
+                newInputBox.transform.Find("LabelText").GetComponent<TMPro.TextMeshProUGUI>().SetText("Size");
+                // Remove the randomize button
+                var randomBtn = newInputBox.transform.Find("ButtonArea");
+                if (randomBtn != null) randomBtn.gameObject.SetActive(false);
+
+                var newInputBoxButton = newInputBox.GetComponentInChildren<UnityEngine.UI.Button>();
+                newInputBoxButton.onClick.RemoveAllListeners();
+                newInputBoxButton.onClick.AddListener((Action)(() => {
+                    popupLeftCallbackCache = PopupMessageController.Instance.OnLeftButton;
+                    popupRightCallbackCache = PopupMessageController.Instance.OnRightButton;
+
+                    PopupMessageController.Instance.inputField.SetText($"{RestartSafeController.Instance.cityX - 2}x{RestartSafeController.Instance.cityY - 2}");
+                    PopupMessageController.Instance.OnLeftButton = (PopupMessageController.LeftButton)HandlePopupCancel;
+                    PopupMessageController.Instance.OnRightButton = (PopupMessageController.RightButton)HandlePopupSubmit;
+                    PopupMessageController.Instance.PopupMessage("Enter city width.", true, true, RButton: "Confirm", enableInputField: true);
+
+
+                    //This is a temporary fix, that forces the title text
+                    var title = popupMessageObject.transform.Find("Header/PanelTitle").gameObject;
+                    title.GetComponent<TextMeshProUGUI>().text = "Enter City Size";
+
+                }));
+
+                newSizeTMPButtonLabel = newInputBoxButton.GetComponentInChildren<TMPro.TextMeshProUGUI>();
+                UpdateMenuText();
+
+                // Disable the normal input box
+                // "MainMenu/GenerateCityPanel/GenerateNewCityComponents/SizeDropdown"
+                var SizeDropdownIndex = inputTemplate.transform.parent.FindChild("SizeDropdown").GetSiblingIndex();
+                inputTemplate.transform.parent.FindChild("SizeDropdown").gameObject.SetActive(false);
+
+                // Add the new input area
+                newInputBox.transform.SetParent(inputTemplate.transform.parent, true);
+                newInputBox.transform.SetSiblingIndex(SizeDropdownIndex);
             }
             
             // TODO: This is being called on submit for all popups, for unknown reasons
